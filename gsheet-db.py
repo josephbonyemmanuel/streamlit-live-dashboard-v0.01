@@ -8,7 +8,7 @@ st.set_page_config(page_title="Live Dashboard", layout="wide")
 st.title("📊 Live Google Sheets Dashboard")
 
 # 1. Load data from public Google Sheet
-sheet_url = "https://docs.google.com/spreadsheets/d/1JWSDu3P5wYeiuTWQQ-QfkwafOD_jZO2NjQflBsZLOj8/export?format=csv"
+sheet_url = "https://docs.google.com/spreadsheets/d/1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8/export?format=csv"
 df = pd.read_csv(sheet_url)
 
 # 2. Show data table
