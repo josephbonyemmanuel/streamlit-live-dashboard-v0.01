@@ -18,6 +18,6 @@ df = pd.read_csv(sheet_url)
 # 3. Optional line chart
 if 'talktime' in df.columns and 'partner' in df.columns:
     df = df.sort_values(by='talktime')
-    st.line_chart(df.set_index('talktime')['partner'])
+    st.line_chart(df.set_index('partner')['talktime'])
 else:
     st.warning("Please make sure 'talktime' and 'partner' columns exist in your sheet.")
