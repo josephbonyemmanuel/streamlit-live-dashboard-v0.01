@@ -12,13 +12,12 @@ sheet_url = "https://docs.google.com/spreadsheets/d/1vbH4bWqwFVSWprF0U4wsyWFjtiS
 df = pd.read_csv(sheet_url)
 
 # 2. Show data table
-st.subheader("📋 Data Table")
-st.dataframe(df)
+# st.subheader("📋 Data Table")
+#st.dataframe(df)
 
 # 3. Optional line chart
-if 'Date' in df.columns and 'Sales' in df.columns:
-    df['Date'] = pd.to_datetime(df['Date'])
-    df = df.sort_values(by='Date')
-    st.line_chart(df.set_index('Date')['Sales'])
+if 'talktime' in df.columns and 'partner' in df.columns:
+    df = df.sort_values(by='talktime')
+    st.line_chart(df.set_index('talktime')['partner'])
 else:
-    st.warning("Please make sure 'Date' and 'Sales' columns exist in your sheet.")
+    st.warning("Please make sure 'talktime' and 'partner' columns exist in your sheet.")
