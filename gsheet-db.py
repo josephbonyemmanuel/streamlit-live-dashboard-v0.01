@@ -1,43 +1,40 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ Your actual Google Sheet ID
+# ✅ Use your actual Google Sheet ID here
 SHEET_ID = "1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8"
 sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
 
-# 🔧 Streamlit settings
+# 🔧 Streamlit page settings
 st.set_page_config(page_title="Partner Engagement Dashboard", layout="wide")
 st.title("📞 Partner Engagement Dashboard")
 
 # 🔄 Load and process data
 try:
+    # 🟢 Read Google Sheet as CSV
     df = pd.read_csv(sheet_url)
 
-    # ✅ Show raw columns for debug
+    # 🧪 Debug: Show columns
     st.write("📑 Columns detected:", df.columns.tolist())
 
-    # ✅ Check required columns
+    # ✅ Check expected columns
     expected_cols = {"partner", "Talktime", "Calls"}
     if not expected_cols.issubset(set(df.columns)):
-        st.error("❌ Your sheet must contain columns: 'partner', 'Talktime', and 'Calls'")
+        st.error("❌ Your sheet must contain columns: 'partner', 'Talktime', 'Calls'")
         st.stop()
 
-    # ✅ Rename + cleanup
+    # 🛠 Clean and transform
     df.rename(columns={"partner": "PartnerCode"}, inplace=True)
     df = df[["PartnerCode", "Talktime", "Calls"]]
-    # Force numeric conversion — errors='coerce' turns invalid values to NaN
-df["Talktime"] = pd.to_numeric(df["Talktime"], errors='coerce')
-df["Calls"] = pd.to_numeric(df["Calls"], errors='coerce')
 
-# Fill missing values with 0 (optional)
-df["Talktime"].fillna(0, inplace=True)
-df["Calls"].fillna(0, inplace=True)
+    # 🔢 Convert columns to numbers
+    df["Talktime"] = pd.to_numeric(df["Talktime"], errors="coerce").fillna(0)
+    df["Calls"] = pd.to_numeric(df["Calls"], errors="coerce").fillna(0)
 
-# Now safe to divide
-df["Talktime_min"] = df["Talktime"] / 60
+    # ⏱ Convert seconds to minutes
+    df["Talktime_min"] = df["Talktime"] / 60
 
-
-    # ✅ Categorize engagement
+    # 🟦 Classify partner status
     def classify(row):
         if row["Calls"] == 0:
             return "🟥 Not Connected"
@@ -48,25 +45,29 @@ df["Talktime_min"] = df["Talktime"] / 60
     
     df["Status"] = df.apply(classify, axis=1)
 
-    # ✅ KPIs
+    # 📊 Show KPIs
     col1, col2, col3 = st.columns(3)
     col1.metric("📈 Total Talktime (min)", f"{df['Talktime_min'].sum():.1f}")
     col2.metric("👥 Total Partners", df.shape[0])
-    col3.metric("📞 No Calls", (df["Calls"] == 0).sum())
+    col3.metric("📞 No Calls", int((df["Calls"] == 0).sum()))
 
-    # ✅ Filter by status
-    status_filter = st.selectbox("📂 Filter by Partner Status", ["All", "🟥 Not Connected", "🟨 <1 Min Talktime", "🟩 Active"])
+    # 🔍 Filter by status
+    status_filter = st.selectbox(
+        "📂 Filter by Partner Status",
+        ["All", "🟥 Not Connected", "🟨 <1 Min Talktime", "🟩 Active"]
+    )
     if status_filter != "All":
         df = df[df["Status"] == status_filter]
 
-    # ✅ Table view
+    # 🧾 Table view
     st.subheader("📋 Partner-wise Talktime")
     st.dataframe(
         df[["PartnerCode", "Talktime_min", "Calls", "Status"]]
         .sort_values(by="Talktime_min", ascending=False),
         use_container_width=True
     )
-  # ✅ Chart
+
+    # 📈 Bar chart
     st.subheader("📊 Talktime by Partner")
     st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
 
