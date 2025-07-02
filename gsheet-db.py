@@ -2,11 +2,6 @@
 import streamlit as st
 import pandas as pd
 
-# Page settings
-st.set_page_config(page_title="Live Dashboard", layout="wide")
-
-st.title("📊 Live Google Sheets Dashboard")
-
 # 1. Load data from public Google Sheet
 sheet_url = "https://docs.google.com/spreadsheets/d/1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8/export?format=csv"
 
