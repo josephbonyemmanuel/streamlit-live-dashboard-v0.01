@@ -25,7 +25,17 @@ try:
     # ✅ Rename + cleanup
     df.rename(columns={"partner": "PartnerCode"}, inplace=True)
     df = df[["PartnerCode", "Talktime", "Calls"]]
-    df["Talktime_min"] = df["Talktime"] / 60
+    # Force numeric conversion — errors='coerce' turns invalid values to NaN
+df["Talktime"] = pd.to_numeric(df["Talktime"], errors='coerce')
+df["Calls"] = pd.to_numeric(df["Calls"], errors='coerce')
+
+# Fill missing values with 0 (optional)
+df["Talktime"].fillna(0, inplace=True)
+df["Calls"].fillna(0, inplace=True)
+
+# Now safe to divide
+df["Talktime_min"] = df["Talktime"] / 60
+
 
     # ✅ Categorize engagement
     def classify(row):
