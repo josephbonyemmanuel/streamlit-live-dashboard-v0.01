@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-sheet_url = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv"
+sheet_url = "https://docs.google.com/spreadsheets/d/1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8/export?format=csv"
 
 try:
     df = pd.read_csv(sheet_url)
