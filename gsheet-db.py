@@ -40,4 +40,25 @@ try:
 
     # ✅ KPIs
     col1, col2, col3 = st.columns(3)
-    col1.metric("📈 Total T
+    col1.metric("📈 Total Talktime (min)", f"{df['Talktime_min'].sum():.1f}")
+    col2.metric("👥 Total Partners", df.shape[0])
+    col3.metric("📞 No Calls", (df["Calls"] == 0).sum())
+
+    # ✅ Filter by status
+    status_filter = st.selectbox("📂 Filter by Partner Status", ["All", "🟥 Not Connected", "🟨 <1 Min Talktime", "🟩 Active"])
+    if status_filter != "All":
+        df = df[df["Status"] == status_filter]
+
+    # ✅ Table view
+    st.subheader("📋 Partner-wise Talktime")
+    st.dataframe(
+        df[["PartnerCode", "Talktime_min", "Calls", "Status"]]
+        .sort_values(by="Talktime_min", ascending=False),
+        use_container_width=True
+    )
+  # ✅ Chart
+    st.subheader("📊 Talktime by Partner")
+    st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
+
+except Exception as e:
+    st.error(f"❌ Could not load or process Google Sheet: {e}")
