@@ -83,6 +83,10 @@ try:
     # Optional: show visual progress
     st.progress(min(int(achieved_pct), 100))
 
+    # 📈 Bar chart
+    st.subheader("📊 Talktime by Partner")
+    st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
+
 
 except Exception as e:
     st.error(f"❌ Could not load or process Google Sheet: {e}")
