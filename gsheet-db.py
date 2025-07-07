@@ -50,6 +50,7 @@ try:
     col1.metric("📈 Total Talktime (min)", f"{df['Talktime_min'].sum():.1f}")
     col2.metric("👥 Total Partners", df.shape[0])
     col3.metric("📞 No Calls", int((df["Calls"] == 0).sum()))
+    
 
     # 🔍 Filter by status
     status_filter = st.selectbox(
@@ -70,6 +71,21 @@ try:
     # 📈 Bar chart
     st.subheader("📊 Talktime by Partner")
     st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
+
+    # ✅ KPI: Minimum 1 min talktime to 71.5% of partners
+    total_partners = df["PartnerCode"].nunique()
+    met_target = df[df["Talktime_min"] >= 1].shape[0]
+    achieved_pct = (met_target / total_partners) * 100
+    
+    # Show result
+    if achieved_pct >= 71.5:
+        st.success(f"✅ {achieved_pct:.1f}% of partners have ≥1 min talktime (Target: 71.5%)")
+    else:
+        st.error(f"⚠️ Only {achieved_pct:.1f}% of partners have ≥1 min talktime (Target: 71.5%)")
+    
+    # Optional: show visual progress
+    st.progress(min(int(achieved_pct), 100))
+
 
 except Exception as e:
     st.error(f"❌ Could not load or process Google Sheet: {e}")
