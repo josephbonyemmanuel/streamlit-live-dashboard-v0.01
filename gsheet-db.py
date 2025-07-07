@@ -68,9 +68,6 @@ try:
         use_container_width=True
     )
 
-    # 📈 Bar chart
-    st.subheader("📊 Talktime by Partner")
-    st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
 
     # ✅ KPI: Minimum 1 min talktime to 71.5% of partners
     total_partners = df["PartnerCode"].nunique()
