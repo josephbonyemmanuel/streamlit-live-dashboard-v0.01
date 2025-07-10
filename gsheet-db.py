@@ -15,7 +15,8 @@ try:
     # ✅ Extract only required columns for analysis
     df = df[[
         "Partner code", "FRM Code", "Secondary RM Code", "First Activation Date",
-        "MTD  APE", "LMTD APE", "Overall Talktime","Impact on First Activation Reg No."
+        "MTD  APE", "Overall Talktime","Impact on First Activation Reg No.",
+        "Impact APE"
     ]]
 
     # ✅ Rename columns for easier access
@@ -24,18 +25,18 @@ try:
         "FRM Code": "FRM_Code",
         "Secondary RM Code": "Secondary_RM",
         "MTD  APE": "MTD_APE",
-        "LMTD APE": "LMTD_APE",
         "Overall Talktime": "Talktime",
         "First Activation Date": "First_Activation",
-        "Impact on First Activation Reg No.":"My_Activation"
+        "Impact on First Activation Reg No.":"My_Activation",
+        "Impact APE":"SVRM_Business"
     }, inplace=True)
 
     # --- Clean & Prepare Data ---
     df["Talktime"] = pd.to_numeric(df["Talktime"], errors="coerce").fillna(0)
     df["MTD_APE"] = pd.to_numeric(df["MTD_APE"], errors="coerce").fillna(0)
-    df["LMTD_APE"] = pd.to_numeric(df["LMTD_APE"], errors="coerce").fillna(0)
     df["Talktime_min"] = df["Talktime"] / 60
     df["My_Activation"] = pd.to_numeric(df["My_Activation"], errors="coerce").fillna(0)
+    df["SVRM_Business"] = pd.to_numeric(df["SVRM_Business"], errors="coerce").fillna(0)
 
     # ✅ Activation Flag
     df["Activated_By_Me"] = df["My_Activation"].apply(lambda x: "Yes" if x >= 1 else "No")
@@ -60,8 +61,8 @@ try:
     activation_score = min(activated_count / activation_target, 1.3) * 40
 
     # Business Score (AP)
-    total_business = df["LMTD_APE"].sum()
-    my_business = df["MTD_APE"].sum()
+    total_business = df["MTD_APE"].sum()
+    my_business = df["SVRM_Business"].sum()
     business_pct = (my_business / total_business) * 100 if total_business > 0 else 0
     business_score = min(business_pct / 12, 1.3) * 40
 
@@ -109,7 +110,7 @@ try:
     # 📋 Partner Table
     st.subheader("📋 Partner-wise Performance")
     st.dataframe(df[[
-        "PartnerCode", "FRM_Code", "Secondary_RM", "MTD_APE", "LMTD_APE",
+        "PartnerCode", "FRM_Code", "Secondary_RM", "MTD_APE","SVRM_business",
         "Talktime_min", "Activated_By_Me", "Status"
     ]].sort_values(by="Talktime_min", ascending=False), use_container_width=True)
 
