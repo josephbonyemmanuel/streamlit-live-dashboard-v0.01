@@ -110,7 +110,7 @@ try:
     # 📋 Partner Table
     st.subheader("📋 Partner-wise Performance")
     st.dataframe(df[[
-        "PartnerCode", "FRM_Code", "Secondary_RM", "MTD_APE","SVRM_business",
+        "PartnerCode", "FRM_Code", "Secondary_RM", "MTD_APE","SVRM_Business",
         "Talktime_min", "Activated_By_Me", "Status"
     ]].sort_values(by="Talktime_min", ascending=False), use_container_width=True)
 
