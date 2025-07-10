@@ -1,92 +1,121 @@
 import streamlit as st
 import pandas as pd
+import datetime
 
-# ✅ Use your actual Google Sheet ID here
+# --- Configuration ---
 SHEET_ID = "1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8"
 sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
+st.set_page_config(page_title="SVRM Performance Dashboard", layout="wide")
+st.title("📊 SVRM Incentive & Engagement Dashboard")
 
-# 🔧 Streamlit page settings
-st.set_page_config(page_title="Partner Engagement Dashboard", layout="wide")
-st.title("📞 Partner Engagement Dashboard")
-
-# 🔄 Load and process data
+# --- Load Data ---
 try:
-    # 🟢 Read Google Sheet as CSV
     df = pd.read_csv(sheet_url)
 
-    # 🧪 Debug: Show columns
-    st.write("📑 Columns detected:", df.columns.tolist())
+    # ✅ Extract only required columns for analysis
+    df = df[[
+        "Partner code", "FRM Code", "Secondary RM Code", "First Activation Date",
+        "MTD  APE", "LMTD APE", "Overall Talktime", "Calls"
+    ]]
 
-    # ✅ Check expected columns
-    expected_cols = {"partner", "Talktime", "Calls"}
-    if not expected_cols.issubset(set(df.columns)):
-        st.error("❌ Your sheet must contain columns: 'partner', 'Talktime', 'Calls'")
-        st.stop()
+    # ✅ Rename columns for easier access
+    df.rename(columns={
+        "Partner code": "PartnerCode",
+        "FRM Code": "FRM_Code",
+        "Secondary RM Code": "Secondary_RM",
+        "MTD  APE": "MTD_APE",
+        "LMTD APE": "LMTD_APE",
+        "Overall Talktime": "Talktime",
+        "Calls": "Calls",
+        "First Activation Date": "First_Activation"
+    }, inplace=True)
 
-    # 🛠 Clean and transform
-    df.rename(columns={"partner": "PartnerCode"}, inplace=True)
-    df = df[["PartnerCode", "Talktime", "Calls"]]
-
-    # 🔢 Convert columns to numbers
+    # --- Clean & Prepare Data ---
     df["Talktime"] = pd.to_numeric(df["Talktime"], errors="coerce").fillna(0)
     df["Calls"] = pd.to_numeric(df["Calls"], errors="coerce").fillna(0)
-
-    # ⏱ Convert seconds to minutes
+    df["MTD_APE"] = pd.to_numeric(df["MTD_APE"], errors="coerce").fillna(0)
+    df["LMTD_APE"] = pd.to_numeric(df["LMTD_APE"], errors="coerce").fillna(0)
     df["Talktime_min"] = df["Talktime"] / 60
 
-    # 🟦 Classify partner status
-    def classify(row):
+    # ✅ Activation Flag
+    df["Activated_By_Me"] = df["MTD_APE"].apply(lambda x: "Yes" if x >= 4000 else "No")
+
+    # ✅ Partner Status by Talktime
+    def status(row):
         if row["Calls"] == 0:
             return "🟥 Not Connected"
         elif row["Talktime_min"] < 1:
-            return "🟨 <1 Min Talktime"
+            return "🟨 <1 Min"
         else:
-            return "🟩 Active"
-    
-    df["Status"] = df.apply(classify, axis=1)
+            return "🟩 Connected"
+    df["Status"] = df.apply(status, axis=1)
 
-    # 📊 Show KPIs
-    col1, col2, col3 = st.columns(3)
-    col1.metric("📈 Total Talktime (min)", f"{df['Talktime_min'].sum():.1f}")
-    col2.metric("👥 Total Partners", df.shape[0])
-    col3.metric("📞 No Calls", int((df["Calls"] == 0).sum()))
-    
-
-    # 🔍 Filter by status
-    status_filter = st.selectbox(
-        "📂 Filter by Partner Status",
-        ["All", "🟥 Not Connected", "🟨 <1 Min Talktime", "🟩 Active"]
-    )
-    if status_filter != "All":
-        df = df[df["Status"] == status_filter]
-
-    # 🧾 Table view
-    st.subheader("📋 Partner-wise Talktime")
-    st.dataframe(
-        df[["PartnerCode", "Talktime_min", "Calls", "Status"]]
-        .sort_values(by="Talktime_min", ascending=False),
-        use_container_width=True
-    )
-
-
-    # ✅ KPI: Minimum 1 min talktime to 71.5% of partners
+    # ✅ Metrics
     total_partners = df["PartnerCode"].nunique()
-    met_target = df[df["Talktime_min"] >= 1].shape[0]
-    achieved_pct = (met_target / total_partners) * 100
-    
-    # Show result
-    if achieved_pct >= 71.5:
-        st.success(f"✅ {achieved_pct:.1f}% of partners have ≥1 min talktime (Target: 71.5%)")
-    else:
-        st.error(f"⚠️ Only {achieved_pct:.1f}% of partners have ≥1 min talktime (Target: 71.5%)")
-    
-    # Optional: show visual progress
-    st.progress(min(int(achieved_pct), 100))
+    connected_1min = df[df["Talktime_min"] >= 1].shape[0]
+    connected_pct = (connected_1min / total_partners) * 100
 
-    # 📈 Bar chart
-    st.subheader("📊 Talktime by Partner")
+    activated_count = df[df["Activated_By_Me"] == "Yes"].shape[0]
+    activation_target = 26
+    activation_score = min(activated_count / activation_target, 1.3) * 40
+
+    # Business Score (AP)
+    total_business = df["LMTD_APE"].sum()
+    my_business = df["MTD_APE"].sum()
+    business_pct = (my_business / total_business) * 100 if total_business > 0 else 0
+    business_score = min(business_pct / 12, 1.3) * 40
+
+    # Connectivity Score
+    connectivity_score = min(connected_pct / 55, 1.3) * 20
+
+    # Total Score
+    total_score = activation_score + business_score + connectivity_score
+
+    # 📅 Projection: Expected Business at Month End
+    today = datetime.date.today().day
+    last_day = (datetime.date.today().replace(day=28) + datetime.timedelta(days=4)).replace(day=1) - datetime.timedelta(days=1)
+    days_in_month = last_day.day
+
+    expected_business_pct = (business_pct / today) * days_in_month
+    expected_business_pct = min(expected_business_pct, 130)
+
+    # 🔲 KPI Meters
+    st.subheader("📈 Business Progress")
+    m1, m2 = st.columns(2)
+    m1.metric("💼 Actual Business %", f"{business_pct:.1f}%", f"Target ≥ 12%")
+    m2.metric("🔮 Expected EOM Business %", f"{expected_business_pct:.1f}%", f"Projection")
+
+    st.subheader("🎯 Incentive KPI Breakdown")
+    k1, k2, k3 = st.columns(3)
+    k1.metric("🟢 Activation", f"{activated_count} / 26", f"{activation_score:.1f} pts")
+    k2.metric("📦 Business %", f"{business_pct:.1f}%", f"{business_score:.1f} pts")
+    k3.metric("📞 Connected >1 Min", f"{connected_pct:.1f}%", f"{connectivity_score:.1f} pts")
+
+    st.metric("🏁 Total Score", f"{total_score:.1f} / 130")
+
+    if total_score >= 120:
+        st.success("🎉 You're on track for maximum incentive!")
+    elif total_score >= 100:
+        st.info("👍 Safe zone. Push to cross 120.")
+    else:
+        st.warning("⚠️ Below target. Focus on activation, business & talktime.")
+
+    # 🔍 Filter Section
+    st.subheader("🔍 Partner Filter")
+    filter_status = st.selectbox("Filter by Status", ["All", "🟥 Not Connected", "🟨 <1 Min", "🟩 Connected"])
+    if filter_status != "All":
+        df = df[df["Status"] == filter_status]
+
+    # 📋 Partner Table
+    st.subheader("📋 Partner-wise Performance")
+    st.dataframe(df[[
+        "PartnerCode", "FRM_Code", "Secondary_RM", "MTD_APE", "LMTD_APE",
+        "Talktime_min", "Calls", "Activated_By_Me", "Status"
+    ]].sort_values(by="Talktime_min", ascending=False), use_container_width=True)
+
+    # 📊 Chart
+    st.subheader("📊 Partner Talktime (mins)")
     st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
 
-
 except Exception as e:
-    st.error(f"❌ Could not load or process Google Sheet: {e}")
+    st.error(f"❌ Error loading sheet: {e}")
