@@ -1,13 +1,11 @@
 import streamlit as st
-import pandas as pd
-import datetime
 
-# --- Simple Login Gate ---
+# 🔒 Login gate
 def check_password():
     def password_entered():
         if st.session_state["password"] == st.secrets["password"]:
             st.session_state["authenticated"] = True
-            del st.session_state["password"]  # Don't store password
+            del st.session_state["password"]
         else:
             st.session_state["authenticated"] = False
 
@@ -19,6 +17,9 @@ def check_password():
         st.stop()
 
 check_password()
+
+import pandas as pd
+import datetime
 
 # --- Configuration ---
 SHEET_ID = "1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8"
