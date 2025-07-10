@@ -15,7 +15,7 @@ try:
     # ✅ Extract only required columns for analysis
     df = df[[
         "Partner code", "FRM Code", "Secondary RM Code", "First Activation Date",
-        "MTD  APE", "LMTD APE", "Overall Talktime"
+        "MTD  APE", "LMTD APE", "Overall Talktime","Impact on First Activation Reg No."
     ]]
 
     # ✅ Rename columns for easier access
@@ -26,7 +26,8 @@ try:
         "MTD  APE": "MTD_APE",
         "LMTD APE": "LMTD_APE",
         "Overall Talktime": "Talktime",
-        "First Activation Date": "First_Activation"
+        "First Activation Date": "First_Activation",
+        "Impact on First Activation Reg No.":"My_Activation"
     }, inplace=True)
 
     # --- Clean & Prepare Data ---
@@ -34,9 +35,10 @@ try:
     df["MTD_APE"] = pd.to_numeric(df["MTD_APE"], errors="coerce").fillna(0)
     df["LMTD_APE"] = pd.to_numeric(df["LMTD_APE"], errors="coerce").fillna(0)
     df["Talktime_min"] = df["Talktime"] / 60
+    df["My_Activation"] = pd.to_numeric(df["My_Activation"], errors="coerce").fillna(0)
 
     # ✅ Activation Flag
-    df["Activated_By_Me"] = df["MTD_APE"].apply(lambda x: "Yes" if x >= 4000 else "No")
+    df["Activated_By_Me"] = df["My_Activation"].apply(lambda x: "Yes" if x >= 1 else "No")
 
     # ✅ Partner Status by Talktime
     def status(row):
