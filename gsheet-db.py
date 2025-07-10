@@ -15,7 +15,7 @@ try:
     # ✅ Extract only required columns for analysis
     df = df[[
         "Partner code", "FRM Code", "Secondary RM Code", "First Activation Date",
-        "MTD  APE", "LMTD APE", "Overall Talktime", "Calls"
+        "MTD  APE", "LMTD APE", "Overall Talktime"
     ]]
 
     # ✅ Rename columns for easier access
@@ -26,13 +26,11 @@ try:
         "MTD  APE": "MTD_APE",
         "LMTD APE": "LMTD_APE",
         "Overall Talktime": "Talktime",
-        "Calls": "Calls",
         "First Activation Date": "First_Activation"
     }, inplace=True)
 
     # --- Clean & Prepare Data ---
     df["Talktime"] = pd.to_numeric(df["Talktime"], errors="coerce").fillna(0)
-    df["Calls"] = pd.to_numeric(df["Calls"], errors="coerce").fillna(0)
     df["MTD_APE"] = pd.to_numeric(df["MTD_APE"], errors="coerce").fillna(0)
     df["LMTD_APE"] = pd.to_numeric(df["LMTD_APE"], errors="coerce").fillna(0)
     df["Talktime_min"] = df["Talktime"] / 60
@@ -42,7 +40,7 @@ try:
 
     # ✅ Partner Status by Talktime
     def status(row):
-        if row["Calls"] == 0:
+        if row["Talktime_min"] == 0:
             return "🟥 Not Connected"
         elif row["Talktime_min"] < 1:
             return "🟨 <1 Min"
@@ -110,7 +108,7 @@ try:
     st.subheader("📋 Partner-wise Performance")
     st.dataframe(df[[
         "PartnerCode", "FRM_Code", "Secondary_RM", "MTD_APE", "LMTD_APE",
-        "Talktime_min", "Calls", "Activated_By_Me", "Status"
+        "Talktime_min", "Activated_By_Me", "Status"
     ]].sort_values(by="Talktime_min", ascending=False), use_container_width=True)
 
     # 📊 Chart
