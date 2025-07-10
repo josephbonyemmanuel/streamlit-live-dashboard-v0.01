@@ -2,6 +2,24 @@ import streamlit as st
 import pandas as pd
 import datetime
 
+# --- Simple Login Gate ---
+def check_password():
+    def password_entered():
+        if st.session_state["password"] == st.secrets["password"]:
+            st.session_state["authenticated"] = True
+            del st.session_state["password"]  # Don't store password
+        else:
+            st.session_state["authenticated"] = False
+
+    if "authenticated" not in st.session_state:
+        st.text_input("🔒 Enter Password", type="password", on_change=password_entered, key="password")
+        st.stop()
+    elif not st.session_state["authenticated"]:
+        st.error("❌ Incorrect password")
+        st.stop()
+
+check_password()
+
 # --- Configuration ---
 SHEET_ID = "1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8"
 sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
