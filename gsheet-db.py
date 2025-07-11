@@ -35,7 +35,7 @@ try:
     # --- Clean & Prepare Data ---
     df["Talktime"] = pd.to_numeric(df["Talktime"], errors="coerce").fillna(0)
     df["MTD_APE"] = pd.to_numeric(df["MTD_APE"], errors="coerce").fillna(0)
-    df["Talktime_min"] = df["Talktime"] / 60
+    df["Talktime_min"] = (df["Talktime"] / 60).round(1)
     df["My_Activation"] = pd.to_numeric(df["My_Activation"], errors="coerce").fillna(0)
     df["SVRM_Business"] = pd.to_numeric(df["SVRM_Business"], errors="coerce").fillna(0)
 
