@@ -119,7 +119,7 @@ try:
     less_than_4k = df[(df["MTD_APE"] > 0) & (df["MTD_APE"] <= 4000)].shape[0]
     
     # Display as columns
-    s1 = st.columns(1)
+    s1, _ = st.columns(2)
     s1.metric("💰 Total Business", f"₹ {total_business_value:,.0f}")
     
     s2, s3, s4 = st.columns(3)
