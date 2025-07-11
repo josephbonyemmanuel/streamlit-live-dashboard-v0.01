@@ -102,6 +102,37 @@ try:
     else:
         st.warning("⚠️ Below target. Focus on activation, business & talktime.")
 
+    # --- 📊 Business & Call Summary ---
+st.subheader("📌 Summary Metrics")
+
+# Total business
+total_business_value = df["MTD_APE"].sum()
+
+# Call Buckets
+not_connected = df[df["Talktime"] == 0].shape[0]
+less_than_1_min = df[(df["Talktime"] > 0) & (df["Talktime"] < 60)].shape[0]
+greater_than_1_min = df[df["Talktime"] >= 60].shape[0]
+
+# Business Buckets
+more_than_4k = df[df["MTD_APE"] > 4000].shape[0]
+zero_business = df[df["MTD_APE"] == 0].shape[0]
+less_than_4k = df[(df["MTD_APE"] > 0) & (df["MTD_APE"] <= 4000)].shape[0]
+
+# Display as columns
+s1, s2, s3 = st.columns(3)
+s1.metric("💰 Total Business", f"₹ {total_business_value:,.0f}")
+s2.metric("📞 Not Connected", not_connected)
+s3.metric("⏱️ <1 Min Talktime", less_than_1_min)
+
+s4, s5, s6 = st.columns(3)
+s4.metric("📞 >1 Min Talktime", greater_than_1_min)
+s5.metric("🏆 > ₹4K Business", more_than_4k)
+s6.metric("🚫 ₹0 Business", zero_business)
+
+s7, _ , _ = st.columns(3)
+s7.metric("⚠️ < ₹4K Business", less_than_4k)
+
+    
     # 🔍 Filter Section
     st.subheader("🔍 Partner Filter")
     filter_status = st.selectbox("Filter by Status", ["All", "🟥 Not Connected", "🟨 <1 Min", "🟩 Connected"])
