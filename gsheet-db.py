@@ -88,12 +88,11 @@ try:
     m2.metric("🔮 Expected EOM Business %", f"{expected_business_pct:.1f}%", f"Projection")
 
     st.subheader("🎯 Incentive KPI Breakdown")
-    k1, k2, k3 = st.columns(3)
+    k1, k2, k3, k4 = st.columns(4)
     k1.metric("🟢 Activation", f"{activated_count} / 26", f"{activation_score:.1f} pts")
     k2.metric("📦 Business %", f"{business_pct:.1f}%", f"{business_score:.1f} pts")
     k3.metric("📞 Connected >1 Min", f"{connected_pct:.1f}%", f"{connectivity_score:.1f} pts")
-
-    st.metric("🏁 Total Score", f"{total_score:.1f} / 130")
+    k4.metric("🏁 Total Score", f"{total_score:.1f} / 130")
 
     if total_score >= 120:
         st.success("🎉 You're on track for maximum incentive!")
