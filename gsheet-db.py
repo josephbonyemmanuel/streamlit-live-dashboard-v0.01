@@ -121,7 +121,7 @@ try:
     s1, _ = st.columns(2)
     s1.metric("💰 Total Business", f"₹ {total_business_value:,.0f}")
     
-    s2, s3, s4, s5, s6, s7 = st.columns(3)
+    s2, s3, s4, s5, s6, s7 = st.columns(6)
     s2.metric("📞 Not Connected", not_connected)
     s3.metric("⏱️ <1 Min Talktime", less_than_1_min)
     s4.metric("📞 >1 Min Talktime", greater_than_1_min)
