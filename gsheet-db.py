@@ -1,17 +1,26 @@
 import streamlit as st
-
 import pandas as pd
 import datetime
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-# --- Configuration ---
-SHEET_ID = "1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8"
-sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
+# --- Auth using secrets.toml ---
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gcp_service_account"], scope)
+client = gspread.authorize(creds)
+
+# --- Open Google Sheet securely using Sheet ID ---
+SHEET_ID = "1uNMfABl9J5JjvsCXORSR_kzVfEK7e4QMOxTKAHlEVPI"
+sheet = client.open_by_key(SHEET_ID).sheet1
+
+# --- Configuration --
 st.set_page_config(page_title="SVRM Performance Dashboard", layout="wide")
 st.title("📊 SVRM Incentive & Engagement Dashboard")
 
 # --- Load Data ---
 try:
-    df = pd.read_csv(sheet_url)
+    data = sheet.get_all_records()
+    df = pd.DataFrame(data)
 
     # ✅ Extract only required columns for analysis
     df = df[[
