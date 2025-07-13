@@ -10,8 +10,8 @@ st.set_page_config(page_title="SVRM Performance Dashboard", layout="wide")
 st.title("📊 SVRM Incentive & Engagement Dashboard")
 
 # --- Open Google Sheet securely using Sheet ID ---
-SHEET_ID = "1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8"
-csv_url = "https://docs.google.com/spreadsheets/d/1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8/edit?gid=2055473051#gid=2055473051"
+
+csv_url = "https://docs.google.com/spreadsheets/d/1uNMfABl9J5JjvsCXORSR_kzVfEK7e4QMOxTKAHlEVPI/edit?gid=2055473051#gid=2055473051"
 
 
 
