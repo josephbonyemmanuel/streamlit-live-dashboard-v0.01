@@ -21,14 +21,15 @@ try:
 
     # ✅ Extract only required columns for analysis
     df = df[[
-        "Partner code", "FRM Code", "Secondary RM Code", "First Activation Date",
+        #"Partner code", 
+        "FRM Code", "Secondary RM Code", "First Activation Date",
         "MTD  APE", "Overall Talktime","Impact on First Activation Reg No.",
         "Impact APE"
     ]]
 
     # ✅ Rename columns for easier access
     df.rename(columns={
-        "Partner code": "PartnerCode",
+        #"Partner code": "PartnerCode",
         "FRM Code": "FRM_Code",
         "Secondary RM Code": "Secondary_RM",
         "MTD  APE": "MTD_APE",
@@ -59,7 +60,7 @@ try:
     df["Status"] = df.apply(status, axis=1)
 
     # ✅ Metrics
-    total_partners = df["PartnerCode"].nunique()
+    total_partners = df["SVRM_Business"]
     connected_1min = df[df["Talktime_min"] >= 1].shape[0]
     connected_pct = (connected_1min / total_partners) * 100
 
