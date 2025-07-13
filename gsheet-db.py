@@ -11,18 +11,13 @@ st.title("📊 SVRM Incentive & Engagement Dashboard")
 
 # --- Open Google Sheet securely using Sheet ID ---
 SHEET_ID = "1vbH4bWqwFVSWprF0U4wsyWFjtiSiVbW8"
-try:
-    sheet = client.open_by_key(SHEET_ID).sheet1
-    st.success("✅ Sheet access successful")
-except Exception as e:
-    st.error(f"❌ Sheet access failed: {e}")
-    st.stop()
+csv_url = "https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid=123456789"
 
 
 
 # --- Load Data ---
 try:
-    data = sheet.get_all_records()
+    df = pd.read_csv(csv_url)
     df = pd.DataFrame(data)
 
     # ✅ Extract only required columns for analysis
