@@ -153,7 +153,7 @@ try:
 
     # 📊 Chart
     st.subheader("📊 Partner Talktime (mins)")
-    st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
+    st.bar_chart(df.set_index("SVRM_Business")["Talktime_min"])
 
 except Exception as e:
     st.error(f"❌ Error loading sheet: {e}")
