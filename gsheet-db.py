@@ -10,6 +10,10 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gcp_service_account"], scope)
 client = gspread.authorize(creds)
 
+# --- Configuration --
+st.set_page_config(page_title="SVRM Performance Dashboard", layout="wide")
+st.title("📊 SVRM Incentive & Engagement Dashboard")
+
 # --- Open Google Sheet securely using Sheet ID ---
 SHEET_ID = "1uNMfABl9J5JjvsCXORSR_kzVfEK7e4QMOxTKAHlEVPI"
 try:
@@ -19,9 +23,7 @@ except Exception as e:
     st.error(f"❌ Sheet access failed: {e}")
     st.stop()
 
-# --- Configuration --
-st.set_page_config(page_title="SVRM Performance Dashboard", layout="wide")
-st.title("📊 SVRM Incentive & Engagement Dashboard")
+
 
 # --- Load Data ---
 try:
