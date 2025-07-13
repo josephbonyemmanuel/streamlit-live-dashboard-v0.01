@@ -60,7 +60,7 @@ try:
     df["Status"] = df.apply(status, axis=1)
 
     # ✅ Metrics
-    total_partners = df["SVRM_Business"]
+    total_partners = df["SVRM_Business"].count()
     connected_1min = df[df["Talktime_min"] >= 1].shape[0]
     connected_pct = (connected_1min / total_partners) * 100
 
