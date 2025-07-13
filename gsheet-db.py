@@ -18,7 +18,6 @@ csv_url = "https://docs.google.com/spreadsheets/d/1vbH4bWqwFVSWprF0U4wsyWFjtiSiV
 # --- Load Data ---
 try:
     df = pd.read_csv(csv_url)
-    df = pd.DataFrame(data)
 
     # ✅ Extract only required columns for analysis
     df = df[[
