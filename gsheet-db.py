@@ -11,7 +11,7 @@ st.title("📊 SVRM Incentive & Engagement Dashboard")
 
 # --- Open Google Sheet securely using Sheet ID ---
 
-csv_url = "https://docs.google.com/spreadsheets/d/1uNMfABl9J5JjvsCXORSR_kzVfEK7e4QMOxTKAHlEVPI/edit?gid=2055473051#gid=2055473051"
+csv_url = "https://docs.google.com/spreadsheets/d/1uNMfABl9J5JjvsCXORSR_kzVfEK7e4QMOxTKAHlEVPI/export?format=csv&gid=2055473051"
 
 
 
