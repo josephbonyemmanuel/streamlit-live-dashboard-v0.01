@@ -21,7 +21,7 @@ try:
 
     # ✅ Extract only required columns for analysis
     df = df[[
-        #"Partner code", 
+        "Partner code", 
         "FRM Code", "Secondary RM Code", "First Activation Date",
         "MTD  APE", "Overall Talktime","Impact on First Activation Reg No.",
         "Impact APE"
@@ -29,7 +29,7 @@ try:
 
     # ✅ Rename columns for easier access
     df.rename(columns={
-        #"Partner code": "PartnerCode",
+        "Partner code": "PartnerCode",
         "FRM Code": "FRM_Code",
         "Secondary RM Code": "Secondary_RM",
         "MTD  APE": "MTD_APE",
@@ -146,14 +146,14 @@ try:
     # 📋 Partner Table
     st.subheader("📋 Partner-wise Performance")
     st.dataframe(df[[
-       # "PartnerCode", 
+        "PartnerCode", 
         "FRM_Code", "Secondary_RM", "MTD_APE","SVRM_Business",
         "Talktime_min", "Activated_By_Me", "Status"
     ]].sort_values(by="Talktime_min", ascending=False), use_container_width=True)
 
     # 📊 Chart
     st.subheader("📊 Partner Talktime (mins)")
-    st.bar_chart(df.set_index("SVRM_Business")["Talktime_min"])
+    st.bar_chart(df.set_index("PartnerCode")["Talktime_min"])
 
 except Exception as e:
     st.error(f"❌ Error loading sheet: {e}")
